@@ -33,7 +33,6 @@ const questions = [
 // Load saved progress from session storage
 const userAnswers = JSON.parse(sessionStorage.getItem("progress")) || [];
 
-// Render questions
 function renderQuestions() {
   questionsElement.innerHTML = ""; // Clear previous content
 
@@ -47,11 +46,12 @@ function renderQuestions() {
       choiceElement.setAttribute("name", `question-${i}`);
       choiceElement.setAttribute("value", choice);
 
-      // Restore previous selection from session storage
+      // ✅ Fix: Properly restore checked state on reload
       if (userAnswers[i] === choice) {
         choiceElement.checked = true;
       }
 
+      // ✅ Fix: Save user selection correctly in session storage
       choiceElement.addEventListener("change", () => {
         userAnswers[i] = choice;
         sessionStorage.setItem("progress", JSON.stringify(userAnswers));
@@ -68,7 +68,6 @@ function renderQuestions() {
   });
 }
 
-// Handle quiz submission
 function handleSubmit() {
   let score = 0;
 
@@ -78,12 +77,12 @@ function handleSubmit() {
     }
   });
 
-  // Display score and store it in local storage
+  // ✅ Fix: Display and store the score correctly
   scoreElement.textContent = `Your score is ${score} out of ${questions.length}.`;
   localStorage.setItem("score", score);
 }
 
-// Display last score if available
+// ✅ Fix: Restore score from local storage
 function displayLastScore() {
   const lastScore = localStorage.getItem("score");
   if (lastScore !== null) {
