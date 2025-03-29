@@ -46,12 +46,13 @@ function renderQuestions() {
       choiceElement.setAttribute("name", `question-${i}`);
       choiceElement.setAttribute("value", choice);
 
-      // ✅ Fix: Properly restore checked state on reload
+      // ✅ Fix: Ensure the checked state is properly set
       if (userAnswers[i] === choice) {
-        choiceElement.checked = true;
+        setTimeout(() => {
+          choiceElement.checked = true;
+        }, 0);
       }
 
-      // ✅ Fix: Save user selection correctly in session storage
       choiceElement.addEventListener("change", () => {
         userAnswers[i] = choice;
         sessionStorage.setItem("progress", JSON.stringify(userAnswers));
