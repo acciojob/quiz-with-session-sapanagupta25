@@ -20,7 +20,7 @@ const questions = [
   },
   {
     question: "Which is the largest planet in our solar system?",
-    choices: ["Earth", "Jupiter", "Mars"],
+    choices: ["Earth", "Jupiter", "Mars", "Saturn"],
     answer: "Jupiter",
   },
   {
@@ -35,7 +35,6 @@ const userAnswers = JSON.parse(sessionStorage.getItem("progress")) || [];
 
 function renderQuestions() {
   questionsElement.innerHTML = ""; // Clear previous content
-
   questions.forEach((q, i) => {
     const questionElement = document.createElement("div");
     questionElement.innerHTML = `<p>${q.question}</p>`;
@@ -46,11 +45,9 @@ function renderQuestions() {
       choiceElement.setAttribute("name", `question-${i}`);
       choiceElement.setAttribute("value", choice);
 
-      // ✅ Fix: Ensure the checked state is properly set
+      // ✅ Ensure selections persist after reload
       if (userAnswers[i] === choice) {
-        setTimeout(() => {
-          choiceElement.checked = true;
-        }, 0);
+        choiceElement.checked = true;
       }
 
       choiceElement.addEventListener("change", () => {
@@ -71,19 +68,18 @@ function renderQuestions() {
 
 function handleSubmit() {
   let score = 0;
-
   questions.forEach((q, i) => {
     if (userAnswers[i] === q.answer) {
       score++;
     }
   });
 
-  // ✅ Fix: Display and store the score correctly
-  scoreElement.textContent = `Your score is ${score} out of ${questions.length}.`;
+  // ✅ Ensure score persists in localStorage
   localStorage.setItem("score", score);
+  scoreElement.textContent = `Your score is ${score} out of ${questions.length}.`;
 }
 
-// ✅ Fix: Restore score from local storage
+// ✅ Restore score from local storage
 function displayLastScore() {
   const lastScore = localStorage.getItem("score");
   if (lastScore !== null) {
@@ -92,6 +88,5 @@ function displayLastScore() {
 }
 
 submitButton.addEventListener("click", handleSubmit);
-
 renderQuestions();
 displayLastScore();
