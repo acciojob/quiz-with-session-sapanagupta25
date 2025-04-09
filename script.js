@@ -32,9 +32,8 @@ const scoreElement = document.getElementById("score");
 
 let userAnswers = JSON.parse(sessionStorage.getItem("progress")) || new Array(questions.length).fill(null);
 
-
 function renderQuestions() {
-    questionsElement.innerHTML = "";
+  questionsElement.innerHTML = "";
   for (let i = 0; i < questions.length; i++) {
     const question = questions[i];
     const questionElement = document.createElement("div");
@@ -43,16 +42,16 @@ function renderQuestions() {
     questionText.textContent = question.question;
     questionElement.appendChild(questionText);
 
-    question.choices.forEach(choice => {
+    question.choices.forEach((choice) => {
       const label = document.createElement("label");
 
       const choiceElement = document.createElement("input");
       choiceElement.type = "radio";
-      choiceElement.name = question-${i};
+      choiceElement.name = `question-${i}`;
       choiceElement.value = choice;
 
       if (userAnswers[i] === choice) {
-		  choiceElement.setAttribute("checked", true);
+        choiceElement.checked = true;
       }
 
       choiceElement.addEventListener("change", () => {
@@ -69,6 +68,7 @@ function renderQuestions() {
     questionsElement.appendChild(questionElement);
   }
 }
+
 renderQuestions();
 
 submitButton.addEventListener("click", () => {
@@ -80,6 +80,7 @@ submitButton.addEventListener("click", () => {
     }
   });
 
-  scoreElement.textContent = Your score is ${score} out of ${questions.length}.;
+  scoreElement.textContent = `Your score is ${score} out of ${questions.length}.`;
   localStorage.setItem("score", score.toString());
 });
+
