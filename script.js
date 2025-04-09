@@ -1,7 +1,3 @@
-const questionsElement = document.getElementById("questions");
-const submitButton = document.getElementById("submit");
-const scoreElement = document.getElementById("score");
-
 const questions = [
   {
     question: "What is the capital of France?",
@@ -20,7 +16,7 @@ const questions = [
   },
   {
     question: "Which is the largest planet in our solar system?",
-    choices: ["Earth", "Jupiter", "Mars", "Saturn"],
+    choices: ["Earth", "Jupiter", "Mars"],
     answer: "Jupiter",
   },
   {
@@ -30,22 +26,30 @@ const questions = [
   },
 ];
 
-// Load saved progress from session storage
-const userAnswers = JSON.parse(sessionStorage.getItem("progress")) || [];
+const questionsElement = document.getElementById("questions");
+const submitButton = document.getElementById("submit");
+const scoreElement = document.getElementById("score");
+
+let userAnswers = JSON.parse(sessionStorage.getItem("progress")) || new Array(questions.length).fill(null);
 
 function renderQuestions() {
-  questionsElement.innerHTML = ""; // Clear previous content
-  questions.forEach((q, i) => {
+  questionsElement.innerHTML = "";
+  for (let i = 0; i < questions.length; i++) {
+    const question = questions[i];
     const questionElement = document.createElement("div");
-    questionElement.innerHTML = `<p>${q.question}</p>`;
 
-    q.choices.forEach((choice) => {
+    const questionText = document.createElement("p");
+    questionText.textContent = question.question;
+    questionElement.appendChild(questionText);
+
+    question.choices.forEach((choice) => {
+      const label = document.createElement("label");
+
       const choiceElement = document.createElement("input");
-      choiceElement.setAttribute("type", "radio");
-      choiceElement.setAttribute("name", `question-${i}`);
-      choiceElement.setAttribute("value", choice);
+      choiceElement.type = "radio";
+      choiceElement.name = `question-${i}`;
+      choiceElement.value = choice;
 
-      // ✅ Ensure selections persist after reload
       if (userAnswers[i] === choice) {
         choiceElement.checked = true;
       }
@@ -55,38 +59,28 @@ function renderQuestions() {
         sessionStorage.setItem("progress", JSON.stringify(userAnswers));
       });
 
-      const label = document.createElement("label");
-      label.textContent = choice;
-
-      questionElement.appendChild(choiceElement);
+      label.appendChild(choiceElement);
+      label.appendChild(document.createTextNode(choice));
       questionElement.appendChild(label);
+      questionElement.appendChild(document.createElement("br"));
     });
 
     questionsElement.appendChild(questionElement);
-  });
+  }
 }
 
-function handleSubmit() {
+renderQuestions();
+
+submitButton.addEventListener("click", () => {
   let score = 0;
-  questions.forEach((q, i) => {
-    if (userAnswers[i] === q.answer) {
+
+  questions.forEach((question, index) => {
+    if (userAnswers[index] === question.answer) {
       score++;
     }
   });
 
-  // ✅ Ensure score persists in localStorage
-  localStorage.setItem("score", score);
   scoreElement.textContent = `Your score is ${score} out of ${questions.length}.`;
-}
+  localStorage.setItem("score", score.toString());
+});
 
-// ✅ Restore score from local storage
-function displayLastScore() {
-  const lastScore = localStorage.getItem("score");
-  if (lastScore !== null) {
-    scoreElement.textContent = `Last score: ${lastScore} out of ${questions.length}`;
-  }
-}
-
-submitButton.addEventListener("click", handleSubmit);
-renderQuestions();
-displayLastScore();
